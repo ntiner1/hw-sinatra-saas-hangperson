@@ -4,12 +4,68 @@ class HangpersonGame
   # to make the tests in spec/hangperson_game_spec.rb pass.
 
   # Get a word from remote "random word" service
-
-  # def initialize()
-  # end
+  attr_accessor :word
+  attr_accessor :guesses
+  attr_accessor :wrong_guesses
   
   def initialize(word)
     @word = word
+    @guesses = ""
+    @wrong_guesses = ""
+    @guess_count = 0
+    @guessed_word = ""
+    @win_or_loss = :play
+  end
+  
+  def guess(letter)
+    @guess_count += 1
+    raise ArgumentError if invalidLetter? letter
+    letter.downcase!
+    return false if alreadyGuessed? letter
+    if self.word.include? letter
+      self.guesses += letter
+    else
+      self.wrong_guesses += letter
+    end
+    updateResults
+    return true
+  end
+  
+  def word_with_guesses()
+    @guessed_word
+  end
+  
+  def check_win_or_lose()
+    @win_or_loss
+  end
+  
+  private def updateResults()
+    @guessed_word = ""
+    for i in 0...(self.word.size)
+      if self.guesses.include? self.word[i]  
+        @guessed_word += self.word[i]
+      else
+        @guessed_word += "-"
+      end
+    end
+    
+    if @guessed_word.include? "-"
+      if @guess_count >= 7
+        @win_or_loss = :lose
+      end
+    else
+      if @guess_count < 7
+        @win_or_loss = :win
+      end
+    end
+  end
+  
+  private def invalidLetter?(letter)
+    (letter.nil?) || (letter.empty?) || !(letter =~ /[[:alpha:]]/)
+  end
+  
+  private def alreadyGuessed?(letter)
+    (self.guesses.include? letter) || (self.wrong_guesses.include? letter)
   end
 
   # You can test it by running $ bundle exec irb -I. -r app.rb
