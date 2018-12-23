@@ -12,13 +12,11 @@ class HangpersonGame
     @word = word
     @guesses = ""
     @wrong_guesses = ""
-    @guess_count = 0
     @guessed_word = ""
     @win_or_loss = :play
   end
   
   def guess(letter)
-    @guess_count += 1
     raise ArgumentError if invalidLetter? letter
     letter.downcase!
     return false if alreadyGuessed? letter
@@ -50,11 +48,11 @@ class HangpersonGame
     end
     
     if @guessed_word.include? "-"
-      if @guess_count >= 7
+      if @wrong_guesses.size >= 7
         @win_or_loss = :lose
       end
     else
-      if @guess_count < 7
+      if @wrong_guesses.size < 7
         @win_or_loss = :win
       end
     end
